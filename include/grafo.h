@@ -47,6 +47,22 @@ typedef struct {
     int    origen;
 } ResultadoDijkstra;
 
+/* ─── Datos del vehículo y combustible ─── */
+typedef struct {
+    double rendimiento_kmL;  /* km por litro (ej. 12.5)        */
+    double precio_litro;     /* precio del litro en MXN        */
+    char   tipo[30];         /* descripción del vehículo       */
+} Vehiculo;
+
+/* Calcula litros necesarios para recorrer dist_km */
+double calcular_litros(const Vehiculo *v, double dist_km);
+
+/* Calcula costo total en MXN para recorrer dist_km */
+double calcular_costo(const Vehiculo *v, double dist_km);
+
+/* Pide al usuario los datos del vehículo y los llena en *v */
+void   pedir_vehiculo(Vehiculo *v);
+
 /* ─── Prototipos ─── */
 void   grafo_init(Grafo *g);
 void   grafo_agregar_nodo(Grafo *g, const char *codigo, const char *nombre,
@@ -57,10 +73,13 @@ int    grafo_buscar_nodo(const Grafo *g, const char *codigo);
 
 ResultadoDijkstra dijkstra(const Grafo *g, int origen);
 
-void   imprimir_ruta(const Grafo *g, const ResultadoDijkstra *res, int destino);
-void   imprimir_todas_las_rutas(const Grafo *g, const ResultadoDijkstra *res);
+void   imprimir_ruta(const Grafo *g, const ResultadoDijkstra *res, int destino,
+                     const Vehiculo *v);
+void   imprimir_todas_las_rutas(const Grafo *g, const ResultadoDijkstra *res,
+                                const Vehiculo *v);
 void   imprimir_grafo_ascii(const Grafo *g);
-void   imprimir_tabla_distancias(const Grafo *g, const ResultadoDijkstra *res);
+void   imprimir_tabla_distancias(const Grafo *g, const ResultadoDijkstra *res,
+                                 const Vehiculo *v);
 void   imprimir_nodos(const Grafo *g);
 
 const char *tipo_nodo_str(TipoNodo t);

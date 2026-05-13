@@ -130,8 +130,71 @@ ResultadoDijkstra dijkstra(const Grafo *g, int origen) {
    FUNCIONES DE IMPRESIÓN
    ════════════════════════════════════════════════════════ */
 
+/* ════════════════════════════════════════════════════════
+   CÁLCULO DE COMBUSTIBLE
+   ════════════════════════════════════════════════════════ */
+
+double calcular_litros(const Vehiculo *v, double dist_km) {
+    if (v->rendimiento_kmL <= 0.0) return 0.0;
+    return dist_km / v->rendimiento_kmL;
+}
+
+double calcular_costo(const Vehiculo *v, double dist_km) {
+    return calcular_litros(v, dist_km) * v->precio_litro;
+}
+
+void pedir_vehiculo(Vehiculo *v) {
+    printf("\n");
+    printf("  +---------------------------------------------+\n");
+    printf("  |         DATOS DEL VEHICULO / COMBUSTIBLE    |\n");
+    printf("  +---------------------------------------------+\n");
+
+    printf("  Tipo de vehiculo (ej. Camion 3.5t, Pick-up): ");
+    /* leer cadena con espacios */
+    fgets(v->tipo, sizeof(v->tipo), stdin);
+    /* quitar newline */
+    v->tipo[strcspn(v->tipo, "\n")] = '\0';
+    if (v->tipo[0] == '\0') strncpy(v->tipo, "Vehiculo de carga", sizeof(v->tipo)-1);
+
+    /* rendimiento */
+    v->rendimiento_kmL = 0.0;
+    while (v->rendimiento_kmL <= 0.0) {
+        printf("  Rendimiento del vehiculo (km/litro, ej. 10.5): ");
+        if (scanf("%lf", &v->rendimiento_kmL) != 1) {
+            while(getchar()!='\n');
+            v->rendimiento_kmL = 0.0;
+        } else {
+            while(getchar()!='\n');
+        }
+        if (v->rendimiento_kmL <= 0.0)
+            printf("  [!] Ingresa un valor positivo.\n");
+    }
+
+    /* precio del litro */
+    v->precio_litro = 0.0;
+    while (v->precio_litro <= 0.0) {
+        printf("  Precio del litro de gasolina (MXN, ej. 24.50): $ ");
+        if (scanf("%lf", &v->precio_litro) != 1) {
+            while(getchar()!='\n');
+            v->precio_litro = 0.0;
+        } else {
+            while(getchar()!='\n');
+        }
+        if (v->precio_litro <= 0.0)
+            printf("  [!] Ingresa un valor positivo.\n");
+    }
+
+    printf("\n  Vehiculo registrado: %s | %.1f km/L | $%.2f/L\n",
+           v->tipo, v->rendimiento_kmL, v->precio_litro);
+}
+
+/* ════════════════════════════════════════════════════════
+   IMPRESIÓN CON COSTO DE COMBUSTIBLE
+   ════════════════════════════════════════════════════════ */
+
 /* Reconstruye y muestra la ruta óptima desde origen hasta destino */
-void imprimir_ruta(const Grafo *g, const ResultadoDijkstra *res, int destino) {
+void imprimir_ruta(const Grafo *g, const ResultadoDijkstra *res, int destino,
+                   const Vehiculo *v) {
     if (res->dist[destino] >= INF) {
         printf("  [!] No existe ruta desde %s hasta %s\n",
                g->nodos[res->origen].codigo,
@@ -148,7 +211,7 @@ void imprimir_ruta(const Grafo *g, const ResultadoDijkstra *res, int destino) {
         cur = res->prev[cur];
     }
 
-    /* Imprimir de origen a destino */
+    /* Imprimir secuencia de nodos */
     printf("  Ruta: ");
     for (int i = len - 1; i >= 0; i--) {
         printf("%s", g->nodos[camino[i]].codigo);
@@ -156,11 +219,10 @@ void imprimir_ruta(const Grafo *g, const ResultadoDijkstra *res, int destino) {
     }
     printf("\n");
 
-    /* Detalle de cada tramo */
+    /* Detalle de cada tramo con km parciales */
     for (int i = len - 1; i > 0; i--) {
-        int desde  = camino[i];
-        int hasta  = camino[i - 1];
-        /* Buscar la arista para mostrar la vía */
+        int desde = camino[i];
+        int hasta = camino[i - 1];
         Arista *a = g->lista_adj[desde];
         double tramo = 0.0;
         char   via[MAX_VIA] = "---";
@@ -175,28 +237,42 @@ void imprimir_ruta(const Grafo *g, const ResultadoDijkstra *res, int destino) {
         printf("         %s -> %s  (%.1f km | %s)\n",
                g->nodos[desde].codigo, g->nodos[hasta].codigo, tramo, via);
     }
-    printf("  Distancia total: %.1f km\n", res->dist[destino]);
+
+    double dist_total   = res->dist[destino];
+    double litros       = calcular_litros(v, dist_total);
+    double costo_total  = calcular_costo(v, dist_total);
+
+    printf("  %-26s %.1f km\n",  "Distancia total:",  dist_total);
+
+    if (v->rendimiento_kmL > 0.0) {
+        printf("  %-26s %.2f L\n",   "Combustible necesario:", litros);
+        printf("  %-26s $%.2f MXN\n","Costo estimado gasolina:", costo_total);
+    }
 }
 
 /* Muestra tabla de distancias mínimas desde el origen */
-void imprimir_tabla_distancias(const Grafo *g, const ResultadoDijkstra *res) {
-    printf("\n  +------+-----------------------------+------------+-----------+\n");
-    printf("  | Cod  | Destino                     | Dist (km)  | Tipo      |\n");
-    printf("  +------+-----------------------------+------------+-----------+\n");
+void imprimir_tabla_distancias(const Grafo *g, const ResultadoDijkstra *res,
+                               const Vehiculo *v) {
+    printf("\n  +------+-----------------------------+----------+----------+---------------+\n");
+    printf("  | Cod  | Destino                     | Dist(km) | Litros   | Costo (MXN)   |\n");
+    printf("  +------+-----------------------------+----------+----------+---------------+\n");
     for (int i = 0; i < g->num_nodos; i++) {
         if (i == res->origen) continue;
-        char dist_str[16];
-        if (res->dist[i] >= INF)
-            snprintf(dist_str, sizeof(dist_str), "  SIN RUTA");
-        else
-            snprintf(dist_str, sizeof(dist_str), "%10.1f", res->dist[i]);
-        printf("  | %-4s | %-27s | %s | %-9s |\n",
-               g->nodos[i].codigo,
-               g->nodos[i].nombre[0] ? g->nodos[i].nombre : "---",
-               dist_str,
-               tipo_nodo_str(g->nodos[i].tipo));
+        if (res->dist[i] >= INF) {
+            printf("  | %-4s | %-27s | SIN RUTA |    ---   |      ---      |\n",
+                   g->nodos[i].codigo, g->nodos[i].nombre);
+        } else {
+            double litros = calcular_litros(v, res->dist[i]);
+            double costo  = calcular_costo(v, res->dist[i]);
+            printf("  | %-4s | %-27s | %8.1f | %8.2f | $%11.2f |\n",
+                   g->nodos[i].codigo, g->nodos[i].nombre,
+                   res->dist[i], litros, costo);
+        }
     }
-    printf("  +------+-----------------------------+------------+-----------+\n");
+    printf("  +------+-----------------------------+----------+----------+---------------+\n");
+    if (v->rendimiento_kmL > 0.0)
+        printf("  Vehiculo: %s | %.1f km/L | $%.2f/L\n",
+               v->tipo, v->rendimiento_kmL, v->precio_litro);
 }
 
 /* Lista todos los nodos del grafo */
@@ -230,10 +306,11 @@ void imprimir_grafo_ascii(const Grafo *g) {
 }
 
 /* Todas las rutas mínimas desde el origen */
-void imprimir_todas_las_rutas(const Grafo *g, const ResultadoDijkstra *res) {
+void imprimir_todas_las_rutas(const Grafo *g, const ResultadoDijkstra *res,
+                              const Vehiculo *v) {
     for (int i = 0; i < g->num_nodos; i++) {
         if (i == res->origen) continue;
         printf("\n  [%s] %s\n", g->nodos[i].codigo, g->nodos[i].nombre);
-        imprimir_ruta(g, res, i);
+        imprimir_ruta(g, res, i, v);
     }
 }
