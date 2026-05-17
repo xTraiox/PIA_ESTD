@@ -7,14 +7,14 @@
 
 /* ─── Elemento del heap ─── */
 typedef struct {
-    int    nodo;
+    int nodo;
     double dist;
 } HeapElem;
 
 /* ─── Min-heap ─── */
 typedef struct {
     HeapElem datos[HEAP_MAX];
-    int      tam;
+    int tam;
 } MinHeap;
 
 void heap_init(MinHeap *h);

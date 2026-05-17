@@ -30,8 +30,8 @@ static void bajar(MinHeap *h, int i) {
     int tam = h->tam;
     while (1) {
         int menor = i;
-        int iz    = 2 * i + 1;
-        int de    = 2 * i + 2;
+        int iz = 2 * i + 1;
+        int de = 2 * i + 2;
 
         if (iz < tam && h->datos[iz].dist < h->datos[menor].dist)
             menor = iz;
@@ -40,9 +40,9 @@ static void bajar(MinHeap *h, int i) {
 
         if (menor == i) break;
 
-        HeapElem tmp      = h->datos[i];
-        h->datos[i]       = h->datos[menor];
-        h->datos[menor]   = tmp;
+        HeapElem tmp = h->datos[i];
+        h->datos[i] = h->datos[menor];
+        h->datos[menor] = tmp;
         i = menor;
     }
 }

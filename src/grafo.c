@@ -18,8 +18,8 @@ void grafo_agregar_nodo(Grafo *g, const char *codigo, const char *nombre,
                         const char *municipio, TipoNodo tipo) {
     int i = g->num_nodos;
     g->nodos[i].id = i;
-    strncpy(g->nodos[i].codigo,    codigo,    sizeof(g->nodos[i].codigo)    - 1);
-    strncpy(g->nodos[i].nombre,    nombre,    sizeof(g->nodos[i].nombre)    - 1);
+    strncpy(g->nodos[i].codigo, codigo, sizeof(g->nodos[i].codigo) - 1);
+    strncpy(g->nodos[i].nombre, nombre, sizeof(g->nodos[i].nombre) - 1);
     strncpy(g->nodos[i].municipio, municipio, sizeof(g->nodos[i].municipio) - 1);
     g->nodos[i].tipo = tipo;
     g->num_nodos++;
@@ -29,16 +29,16 @@ void grafo_agregar_nodo(Grafo *g, const char *codigo, const char *nombre,
 void grafo_agregar_arista(Grafo *g, int u, int v, double peso, const char *via) {
     /* u → v */
     Arista *a1 = (Arista *)malloc(sizeof(Arista));
-    a1->destino   = v;
-    a1->peso      = peso;
+    a1->destino = v;
+    a1->peso = peso;
     strncpy(a1->via, via, MAX_VIA - 1);
     a1->siguiente = g->lista_adj[u];
     g->lista_adj[u] = a1;
 
     /* v → u (grafo no dirigido) */
     Arista *a2 = (Arista *)malloc(sizeof(Arista));
-    a2->destino   = u;
-    a2->peso      = peso;
+    a2->destino = u;
+    a2->peso = peso;
     strncpy(a2->via, via, MAX_VIA - 1);
     a2->siguiente = g->lista_adj[v];
     g->lista_adj[v] = a2;
@@ -68,13 +68,20 @@ int grafo_buscar_nodo(const Grafo *g, const char *codigo) {
 
 const char *tipo_nodo_str(TipoNodo t) {
     switch (t) {
-        case CEDIS:             return "CEDIS";
-        case PLANTA:            return "Planta";
-        case PARQUE_INDUSTRIAL: return "Parque Industrial";
-        case ALMACEN:           return "Almacen";
-        case NODO_VIAL:         return "Nodo Vial";
-        case FRONTERA:          return "Frontera";
-        default:                return "Desconocido";
+        case CEDIS:             
+            return "CEDIS";
+        case PLANTA:            
+            return "Planta";
+        case PARQUE_INDUSTRIAL: 
+            return "Parque Industrial";
+        case ALMACEN:           
+            return "Almacen";
+        case NODO_VIAL:         
+            return "Nodo Vial";
+        case FRONTERA:          
+            return "Frontera";
+        default:                
+            return "Desconocido";
     }
 }
 
@@ -111,8 +118,8 @@ ResultadoDijkstra dijkstra(const Grafo *g, int origen) {
         /* Relajar aristas salientes de u */
         Arista *a = g->lista_adj[u];
         while (a) {
-            int    v        = a->destino;
-            double nueva    = res.dist[u] + a->peso;
+            int v = a->destino;
+            double nueva = res.dist[u] + a->peso;
 
             if (!visitado[v] && nueva < res.dist[v]) {
                 res.dist[v] = nueva;
@@ -193,8 +200,7 @@ void pedir_vehiculo(Vehiculo *v) {
    ════════════════════════════════════════════════════════ */
 
 /* Reconstruye y muestra la ruta óptima desde origen hasta destino */
-void imprimir_ruta(const Grafo *g, const ResultadoDijkstra *res, int destino,
-                   const Vehiculo *v) {
+void imprimir_ruta(const Grafo *g, const ResultadoDijkstra *res, int destino, const Vehiculo *v) {
     if (res->dist[destino] >= INF) {
         printf("  [!] No existe ruta desde %s hasta %s\n",
                g->nodos[res->origen].codigo,
@@ -234,13 +240,12 @@ void imprimir_ruta(const Grafo *g, const ResultadoDijkstra *res, int destino,
             }
             a = a->siguiente;
         }
-        printf("         %s -> %s  (%.1f km | %s)\n",
-               g->nodos[desde].codigo, g->nodos[hasta].codigo, tramo, via);
+        printf("         %s -> %s  (%.1f km | %s)\n", g->nodos[desde].codigo, g->nodos[hasta].codigo, tramo, via);
     }
 
-    double dist_total   = res->dist[destino];
-    double litros       = calcular_litros(v, dist_total);
-    double costo_total  = calcular_costo(v, dist_total);
+    double dist_total = res->dist[destino];
+    double litros = calcular_litros(v, dist_total);
+    double costo_total = calcular_costo(v, dist_total);
 
     printf("  %-26s %.1f km\n",  "Distancia total:",  dist_total);
 
@@ -259,11 +264,10 @@ void imprimir_tabla_distancias(const Grafo *g, const ResultadoDijkstra *res,
     for (int i = 0; i < g->num_nodos; i++) {
         if (i == res->origen) continue;
         if (res->dist[i] >= INF) {
-            printf("  | %-4s | %-27s | SIN RUTA |    ---   |      ---      |\n",
-                   g->nodos[i].codigo, g->nodos[i].nombre);
+            printf("  | %-4s | %-27s | SIN RUTA |    ---   |      ---      |\n", g->nodos[i].codigo, g->nodos[i].nombre);
         } else {
             double litros = calcular_litros(v, res->dist[i]);
-            double costo  = calcular_costo(v, res->dist[i]);
+            double costo = calcular_costo(v, res->dist[i]);
             printf("  | %-4s | %-27s | %8.1f | %8.2f | $%11.2f |\n",
                    g->nodos[i].codigo, g->nodos[i].nombre,
                    res->dist[i], litros, costo);
@@ -271,8 +275,7 @@ void imprimir_tabla_distancias(const Grafo *g, const ResultadoDijkstra *res,
     }
     printf("  +------+-----------------------------+----------+----------+---------------+\n");
     if (v->rendimiento_kmL > 0.0)
-        printf("  Vehiculo: %s | %.1f km/L | $%.2f/L\n",
-               v->tipo, v->rendimiento_kmL, v->precio_litro);
+        printf("  Vehiculo: %s | %.1f km/L | $%.2f/L\n", v->tipo, v->rendimiento_kmL, v->precio_litro);
 }
 
 /* Lista todos los nodos del grafo */
@@ -298,16 +301,14 @@ void imprimir_grafo_ascii(const Grafo *g) {
         printf("  [%s] %s\n", g->nodos[i].codigo, g->nodos[i].nombre);
         Arista *a = g->lista_adj[i];
         while (a) {
-            printf("       +-- %s (%.1f km | %s)\n",
-                   g->nodos[a->destino].codigo, a->peso, a->via);
+            printf("       +-- %s (%.1f km | %s)\n", g->nodos[a->destino].codigo, a->peso, a->via);
             a = a->siguiente;
         }
     }
 }
 
 /* Todas las rutas mínimas desde el origen */
-void imprimir_todas_las_rutas(const Grafo *g, const ResultadoDijkstra *res,
-                              const Vehiculo *v) {
+void imprimir_todas_las_rutas(const Grafo *g, const ResultadoDijkstra *res, const Vehiculo *v) {
     for (int i = 0; i < g->num_nodos; i++) {
         if (i == res->origen) continue;
         printf("\n  [%s] %s\n", g->nodos[i].codigo, g->nodos[i].nombre);
