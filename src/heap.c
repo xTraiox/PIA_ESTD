@@ -15,9 +15,9 @@ static void subir(MinHeap *h, int i) {
     while (i > 0) {
         int padre = (i - 1) / 2;
         if (h->datos[padre].dist > h->datos[i].dist) {
-            HeapElem tmp    = h->datos[padre];
+            HeapElem tmp = h->datos[padre];
             h->datos[padre] = h->datos[i];
-            h->datos[i]     = tmp;
+            h->datos[i] = tmp;
             i = padre;
         } else {
             break;
