@@ -1,10 +1,10 @@
 #ifndef GRAFO_H
 #define GRAFO_H
 
-#define MAX_NODOS     25
-#define MAX_NOMBRE    80
-#define MAX_VIA       100
-#define INF           999999
+#define MAX_NODOS 25
+#define MAX_NOMBRE 80
+#define MAX_VIA 100
+#define INF 999999
 
 /* ─── Tipos de nodo ─── */
 typedef enum {
@@ -61,22 +61,22 @@ double calcular_litros(const Vehiculo *v, double dist_km);
 double calcular_costo(const Vehiculo *v, double dist_km);
 
 /* Pide al usuario los datos del vehículo y los llena en *v */
-void   pedir_vehiculo(Vehiculo *v);
+void pedir_vehiculo(Vehiculo *v);
 
 /* ─── Prototipos ─── */
-void   grafo_init(Grafo *g);
-void   grafo_agregar_nodo(Grafo *g, const char *codigo, const char *nombre, const char *municipio, TipoNodo tipo);
-void   grafo_agregar_arista(Grafo *g, int u, int v, double peso, const char *via);
-void   grafo_destruir(Grafo *g);
-int    grafo_buscar_nodo(const Grafo *g, const char *codigo);
+void grafo_init(Grafo *g);
+void grafo_agregar_nodo(Grafo *g, const char *codigo, const char *nombre, const char *municipio, TipoNodo tipo);
+void grafo_agregar_arista(Grafo *g, int u, int v, double peso, const char *via);
+void grafo_destruir(Grafo *g);
+int grafo_buscar_nodo(const Grafo *g, const char *codigo);
 
 ResultadoDijkstra dijkstra(const Grafo *g, int origen);
 
-void   imprimir_ruta(const Grafo *g, const ResultadoDijkstra *res, int destino, const Vehiculo *v);
-void   imprimir_todas_las_rutas(const Grafo *g, const ResultadoDijkstra *res, const Vehiculo *v);
-void   imprimir_grafo_ascii(const Grafo *g);
-void   imprimir_tabla_distancias(const Grafo *g, const ResultadoDijkstra *res, const Vehiculo *v);
-void   imprimir_nodos(const Grafo *g);
+void imprimir_ruta(const Grafo *g, const ResultadoDijkstra *res, int destino, const Vehiculo *v);
+void imprimir_todas_las_rutas(const Grafo *g, const ResultadoDijkstra *res, const Vehiculo *v);
+void imprimir_grafo_ascii(const Grafo *g);
+void imprimir_tabla_distancias(const Grafo *g, const ResultadoDijkstra *res, const Vehiculo *v);
+void imprimir_nodos(const Grafo *g);
 
 const char *tipo_nodo_str(TipoNodo t);
 
