@@ -37,7 +37,7 @@ static void banner_vehiculo(const Vehiculo *v) {
 
 static int pedir_nodo(const Grafo *g, const char *prompt) {
     char codigo[10];
-    int  idx = -1;
+    int idx = -1;
     while (idx < 0) {
         printf("  %s (ej. N01): ", prompt);
         if (scanf("%9s", codigo) != 1) { 
