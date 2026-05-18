@@ -18,7 +18,7 @@ typedef struct {
 } MinHeap;
 
 void heap_init(MinHeap *h);
-int  heap_vacio(const MinHeap *h);
+int heap_vacio(const MinHeap *h);
 void heap_insertar(MinHeap *h, int nodo, double dist);
 HeapElem heap_extraer_min(MinHeap *h);
 
