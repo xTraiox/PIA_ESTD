@@ -154,7 +154,7 @@ static void opcion_cambiar_vehiculo(Vehiculo *v) {
 /* ─── main ──────────────────────────────────────────────────────────── */
 
 int main(void) {
-    Grafo   g;
+    Grafo g;
     Vehiculo v;
 
     cargar_red_nl(&g);
