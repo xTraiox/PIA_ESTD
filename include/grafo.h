@@ -28,7 +28,7 @@ typedef struct {
 /* ─── Arista (lista de adyacencia) ─── */
 typedef struct Arista {
     int destino;   /* índice del nodo destino */
-    double peso;      /* distancia en km         */
+    double peso;      /* distancia en km */
     char via[MAX_VIA];
     struct Arista *siguiente;
 } Arista;
@@ -37,21 +37,21 @@ typedef struct Arista {
 typedef struct {
     int num_nodos;
     Nodo nodos[MAX_NODOS];
-    Arista *lista_adj[MAX_NODOS]; /* lista de adyacencia     */
+    Arista *lista_adj[MAX_NODOS]; /* lista de adyacencia */
 } Grafo;
 
 /* ─── Resultado de Dijkstra ─── */
 typedef struct {
     double dist[MAX_NODOS];  /* distancia mínima desde origen */
-    int prev[MAX_NODOS];  /* nodo previo en ruta óptima    */
+    int prev[MAX_NODOS];  /* nodo previo en ruta óptima */
     int origen;
 } ResultadoDijkstra;
 
 /* ─── Datos del vehículo y combustible ─── */
 typedef struct {
-    double rendimiento_kmL;  /* km por litro (ej. 12.5)        */
-    double precio_litro;     /* precio del litro en MXN        */
-    char tipo[30];         /* descripción del vehículo       */
+    double rendimiento_kmL;  /* km por litro (ej. 12.5) */
+    double precio_litro;     /* precio del litro en MXN */
+    char tipo[30];         /* descripción del vehículo */
 } Vehiculo;
 
 /* Calcula litros necesarios para recorrer dist_km */
